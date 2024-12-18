@@ -2,7 +2,12 @@ import redis
 import sys
 import time
 
-r = redis.Redis(host="localhost", port=6379)  # Hubungkan ke Redis Cluster
+# Connect to the Redis Cluster using RedisCluster from redis-py
+from rediscluster import RedisCluster
+
+# Set up cluster nodes
+startup_nodes = [{"host": "localhost", "port": "7000"}, {"host": "localhost", "port": "7001"}, {"host": "localhost", "port": "7002"}]
+r = RedisCluster(startup_nodes=startup_nodes, decode_responses=True)
 
 def send_message(channel, message):
     r.publish(channel, message)

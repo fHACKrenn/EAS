@@ -1,7 +1,10 @@
 import redis
 import time
+from rediscluster import RedisCluster
 
-r = redis.Redis(host="localhost", port=6379)
+# Connect to the Redis Cluster using RedisCluster from redis-py
+startup_nodes = [{"host": "localhost", "port": "7000"}, {"host": "localhost", "port": "7001"}, {"host": "localhost", "port": "7002"}]
+r = RedisCluster(startup_nodes=startup_nodes, decode_responses=True)
 
 def elect_leader():
     leader = r.set("leader_lock", "leader_node", nx=True, ex=10)
@@ -17,7 +20,7 @@ def log_messages():
     with open("chat_log.txt", "a") as log_file:
         for message in pubsub.listen():
             if message['type'] == 'message':
-                log_file.write(message['data'].decode('utf-8') + "\n")
+                log_file.write(message['data'] + "\n")
                 print("Pesan dicatat ke log.")
 
 if __name__ == "__main__":
