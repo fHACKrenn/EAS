@@ -1,7 +1,7 @@
 import redis
 import time
 
-r = redis.Redis(host="localhost", port=7000)
+r = redis.Redis(host="localhost", port=6379)
 
 def elect_leader():
     leader = r.set("leader_lock", "leader_node", nx=True, ex=10)

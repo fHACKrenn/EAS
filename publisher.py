@@ -2,7 +2,7 @@ import redis
 import sys
 import time
 
-r = redis.Redis(host="localhost", port=7000)  # Hubungkan ke Redis Cluster
+r = redis.Redis(host="localhost", port=6379)  # Hubungkan ke Redis Cluster
 
 def send_message(channel, message):
     r.publish(channel, message)
