@@ -1,11 +1,4 @@
-import redis
-from rediscluster import RedisCluster
-
-# Connect to the Redis Cluster using RedisCluster from redis-py
-startup_nodes = [{"host": "localhost", "port": "7000"}, {"host": "localhost", "port": "7001"}, {"host": "localhost", "port": "7002"}]
-r = RedisCluster(startup_nodes=startup_nodes, decode_responses=True)
-
-def listen_to_channel(channel):
+def listen_to_channel(r, channel):
     pubsub = r.pubsub()
     pubsub.subscribe(channel)
     print(f"Mendengarkan channel: {channel}")
@@ -14,5 +7,24 @@ def listen_to_channel(channel):
         if message['type'] == 'message':
             print(f"Pesan diterima: {message['data']}")
 
-if __name__ == "__main__":
-    listen_to_channel("chat_channel")
+def subscriber_menu(r):
+    print("\n=== MODE SUBSCRIBER ===")
+    while True:
+        print("\n1. Lihat Daftar Channel")
+        print("2. Subscribe ke Channel")
+        print("3. Kembali ke Menu Utama")
+        choice = input("Pilih opsi: ")
+
+        if choice == "1":
+            print("Daftar channel yang tersedia:", r.smembers("channels"))
+        elif choice == "2":
+            print("Daftar channel yang tersedia:", r.smembers("channels"))
+            channel = input("Masukkan nama channel untuk subscribe: ")
+            if not r.sismember("channels", channel):
+                print("Channel tidak ditemukan.")
+                continue
+            listen_to_channel(r, channel)
+        elif choice == "3":
+            break
+        else:
+            print("Pilihan tidak valid.")
